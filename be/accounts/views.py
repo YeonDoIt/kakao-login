@@ -9,10 +9,15 @@ from django.conf import settings
 def login_view(request):
     return render(request, 'accounts/login.html')
 
+def begin_kakao_login(request):
+    # 카카오 로그인 URL 생성
+    kakao_auth_url = f"https://kauth.kakao.com/oauth/authorize?client_id={settings.KAKAO_REST_API_KEY}&redirect_uri={settings.KAKAO_REDIRECT_URI}&response_type=code"
+    return redirect(kakao_auth_url)  # 카카오 로그인 페이지로 리다이렉트
+
 def complete_login_view(request):
-    kakao_id = request.session.get('kakao_id', 'Unknown')  # 세션에서 카카오 ID 가져오기
-    nickname = request.session.get('nickname', 'Guest')      # 세션에서 닉네임 가져오기
-    email = request.session.get('email', 'No Email')         # 세션에서 이메일 가져오기
+    kakao_id = request.session.get('kakao_id', 'Unknown') # 세션에서 카카오 ID 가져오기
+    nickname = request.session.get('nickname', 'Guest') # 세션에서 닉네임 가져오기
+    email = request.session.get('email', 'No Email') # 세션에서 이메일 가져오기
 
     return render(request, 'accounts/complete_login.html', {
         'kakao_id': kakao_id,
@@ -86,7 +91,7 @@ def process_user_info(request, user_info):
         }
     )
 
-    # UserProfile 생성 또는 업데이터
+    # UserProfile 생성 또는 업데이트
     UserProfile.objects.get_or_create(user=user, defaults={'usernick': nickname})
 
     # 로그인 처리
