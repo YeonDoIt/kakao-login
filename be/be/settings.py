@@ -14,24 +14,25 @@ from pathlib import Path
 import os
 import environ
 
-# 환경 변수 초기화
-env = environ.Env()
-environ.Env.read_env() # .env 파일 읽기
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# 환경 변수 초기화
+env = environ.Env(DEBUG=(bool, True))
+environ.Env.read_env(
+    env_file=os.path.join(BASE_DIR, '.env')
+)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-n1bummet_++4+t5$ld9fjv5ovbdacvckr%6vj0$)hcs_&n!zon'
+SECRET_KEY = env.str('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 
 # Application definition
@@ -136,7 +137,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # 소셜 인증 설정
-SOCIAL_AUTH_KAKAO_KEY = env('KAKAO_REST_API_KEY') # 카카오 REST API 키
+SOCIAL_AUTH_KAKAO_KEY = env.str('KAKAO_REST_API_KEY') # 카카오 REST API 키
 SOCIAL_AUTH_KAKAO_SCOPE = ['profile_nickname', 'profile_image'] # 요청할 권한
 LOGIN_URL = 'login' # 로그인 URL
 LOGOUT_URL = 'logout' # 로그아웃 URL
