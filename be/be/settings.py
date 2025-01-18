@@ -11,6 +11,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+import environ
+
+# 환경 변수 초기화
+env = environ.Env()
+environ.Env.read_env() # .env 파일 읽기
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'be',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -54,7 +62,7 @@ ROOT_URLCONF = 'be.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -121,3 +129,15 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.kakao.KakaoOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+# 소셜 인증 설정
+SOCIAL_AUTH_KAKAO_KEY = env('KAKAO_REST_API_KEY') # 카카오 REST API 키
+SOCIAL_AUTH_KAKAO_SCOPE = ['profile_nickname', 'profile_image'] # 요청할 권한
+LOGIN_URL = 'login' # 로그인 URL
+LOGOUT_URL = 'logout' # 로그아웃 URL
+LOGIN_REDIRECT_URL = 'complete_login' # 로그인 후 리디렉션한 URL
