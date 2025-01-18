@@ -138,9 +138,13 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
+# 카카오 API 관련 설정
+KAKAO_REST_API_KEY = env.str('KAKAO_REST_API_KEY')
+KAKAO_REDIRECT_URI = env.str('KAKAO_REDIRECT_URI')
+
 # 소셜 인증 설정
 SOCIAL_AUTH_KAKAO_KEY = env.str('KAKAO_REST_API_KEY') # 카카오 REST API 키
 SOCIAL_AUTH_KAKAO_SCOPE = ['profile_nickname', 'profile_image'] # 요청할 권한
 LOGIN_URL = 'login' # 로그인 URL
 LOGOUT_URL = 'logout' # 로그아웃 URL
-LOGIN_REDIRECT_URL = 'handle_kakao_callback' # 로그인 후 리디렉션한 URL
+LOGIN_REDIRECT_URL = 'complete_login' # 로그인 후 리디렉션한 URL
