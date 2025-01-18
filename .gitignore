@@ -1,0 +1,8 @@
+### OSX ###
+.DS_Store
+
+### Django ###
+__pycache__/
+migrations/
+
+.env
