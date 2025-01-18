@@ -3,6 +3,5 @@
 
 ### Django ###
 __pycache__/
-migrations/
 
 .env

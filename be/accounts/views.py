@@ -37,7 +37,7 @@ def handle_kakao_callback(request):
 
             return process_user_info(request, user_info) # 사용자 정보 처리 함수 호출
         except Exception as e:
-            return render(request, 'error.html', {'error': str(e)})
+            return render(request, 'accounts/error.html', {'error': str(e)})
         
     return redirect('login')
 
@@ -66,6 +66,7 @@ def get_kakao_user_info(access_token):
 
     headers = {
         'Authorization': f'Bearer {access_token}',
+        "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
     }
 
     response = requests.get(url, headers=headers)
@@ -80,7 +81,10 @@ def process_user_info(request, user_info):
     # 사용자 정보에서 필요한 데이터 추출
     kakao_id = user_info['id']
     nickname = user_info['properties']['nickname']
+    profile_image = user_info['properties'].get('profile_image', '')
     email = user_info.get('kakao_account', {}).get('email', '')
+    gender = user_info.get('kakao_account', {}).get('gender', '')
+    birthday = user_info.get('kakao_account', {}).get('birthday', '')
 
     # 사용자 존재 여부 확인
     user, created = User.objects.get_or_create(
@@ -92,10 +96,16 @@ def process_user_info(request, user_info):
     )
 
     # UserProfile 생성 또는 업데이트
-    UserProfile.objects.get_or_create(user=user, defaults={'usernick': nickname})
+    user_profile, created = UserProfile.objects.get_or_create(user=user, defaults={'usernick': nickname})
+    user_profile.usernick = nickname
+    user_profile.profile_image = profile_image
+    user_profile.email = email
+    user_profile.gender = gender
+    user_profile.birthday = birthday
+    user_profile.save() # 변경사항 저장
 
     # 로그인 처리
-    login(request, user) # Django의 login 함수 사용
+    login(request, user, backend='django.contrib.auth.backends.ModelBackend') # Django의 login 함수 사용
 
     # 세션에 사용자 정보 저장
     request.session['kakao_id'] = kakao_id
